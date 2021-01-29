@@ -1,0 +1,9 @@
+numpy
+torch
+tensorboard
+gym
+ray
+seaborn
+nevergrad
+opencv-python
+gym[atari]

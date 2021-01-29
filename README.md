@@ -15,7 +15,7 @@ This repository is intended for the lab session of [ME336](https://ancorasir.com
 Projects related to deep learning:
 - [HandeyeCalibration](./HandeyeCalibration): Handeye calibration code
 - [3DPicking](./3DPicking): Example project of 3D picking 
-- [3DPicking](./6DPicking): Example project of 6D picking 
+- [6DPicking](./6DPicking): Example project of 6D picking 
 
 Projects related to reinforcement learning:
 - [MadMario](./MadMario): PyTorch tutorial to build an AI-powered Mario. This example is to learn the Double Q-learning (DDQN) algorithm in reinforcement learning.

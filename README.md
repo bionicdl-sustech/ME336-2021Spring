@@ -12,7 +12,17 @@ This repository is intended for the lab session of [ME336](https://ancorasir.com
 
 ## Lab Demonstration Projects
 
-- [MadMario](./MadMario): PyTorch tutorial to build an AI-powered Mario.
-- [Muzero](./Muzero): A commented and [documented](https://github.com/werner-duvaud/muzero-general/wiki/MuZero-Documentation) implementation of MuZero based on the Google DeepMind [paper](https://arxiv.org/abs/1911.08265) (Nov 2019) and the associated [pseudocode](https://arxiv.org/src/1911.08265v2/anc/pseudocode.py).
+Projects related to deep learning:
+- [HandeyeCalibration](./HandeyeCalibration): Handeye calibration code
+- [3DPicking](./3DPicking): Example project of 3D picking 
+- [3DPicking](./6DPicking): Example project of 6D picking 
+
+Projects related to reinforcement learning:
+- [MadMario](./MadMario): PyTorch tutorial to build an AI-powered Mario. This example is to learn the Double Q-learning (DDQN) algorithm in reinforcement learning.
+- [Muzero](./Muzero): The example is to learn the state of the art RL algorithm for board games (Chess, Go, ...) and Atari games. Optional for students who are interested.
+- [DoorGym](./DoorGym)
 
 ## Lab Assignment Projects
+- Project 1: 2D Picking of (x,y)
+- Project 2: 3D Picking of (x,y,z)
+- Project 3: Your Proposed projects

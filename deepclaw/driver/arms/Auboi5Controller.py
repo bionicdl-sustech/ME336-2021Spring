@@ -12,12 +12,12 @@ import sys
 import os
 import time
 import numpy as np
-import yaml
+
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.append(ROOT)
 
-
+import yaml
 from deepclaw.driver.arms.aubo.robotcontrol import Auboi5Robot, RobotErrorType
 # from robotcontrol import Auboi5Robot
 from deepclaw.driver.arms.ArmController import ArmController
@@ -61,12 +61,15 @@ class AuboController(ArmController):
                solution_space='Space'):
         # position = [x,y,z,r, p, y]
         # pos: position（x, y, z）;unit: m
-        # rpy: euler angle（rx, ry, rz）;unit: degree
+        # rpy: euler angle（rx, ry, rz）;unit: rad
         velocity = self._v if velocity is None else velocity
         acceleration = self._a if acceleration is None else acceleration
 
         self.robot.set_end_max_line_acc(acceleration)
         self.robot.set_end_max_line_velc(velocity)
+        position[3] = position[3] * 180.0 / 3.14159
+        position[4] = position[4] * 180.0 / 3.14159
+        position[5] = position[5] * 180.0 / 3.14159
         self.robot.move_to_target_in_cartesian(position[0:3], position[3:6])
         return True
 
@@ -85,7 +88,7 @@ if __name__ == "__main__":
     home_joint = [0, 0, 1.57, 0, 1.57, 0]
     ss.move_j(home_joint, 1.5, 1.5)
     time.sleep(0.01)
-    position = [0.470, -0.12, 0.212, 180, 0, 90]
+    position = [0.470, -0.12, 0.212, 3.14159, 0, 90]
     ss.move_p(position, 5, 5)
     ss.get_state()
 

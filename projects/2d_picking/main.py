@@ -52,7 +52,7 @@ def pick_place(robot_server: ArmController, gripper_server: object, home_joint, 
     robot_server.move_j(home_joint, 1.5, 1.5)
 
 
-def detectObject(detector_algo: Yolo5, crop_bounding=[200, 470, 360, 720]):
+def detectObject(detector_algo: Yolo5, color, crop_bounding=[200, 470, 360, 720]):
     region_class = detector_algo.detect(color)
     if region_class is None:
         return False, None, None, None
@@ -104,7 +104,7 @@ if __name__ == '__main__':
         color = frame.color_image[0]
         # 识别物体
         # region_class = object_detector.detect(color)
-        ret, uv, cla, cfi = detectObject(object_detector, crop_bounding=[200, 470, 360, 720])
+        ret, uv, cla, cfi = detectObject(object_detector, color, crop_bounding=[200, 470, 360, 720])
         if not ret:
             continue
         if cla not in [0, 1, 2, 3]:

@@ -206,10 +206,10 @@ if __name__ == '__main__':
         temp_pose_up = [transfer[0], transfer[1], transfer[2], rot[0], rot[1], rot[2]]
 
         print('grasp pose: ', temp_pose)
-        # transfer to rotation vector
-        r = R.from_euler('xyz', temp_pose[3:6], degrees=False)
-        rvc = r.as_rotvec()
-        pick_pose = [temp_pose[0], temp_pose[1], temp_pose[2], rvc[0], rvc[1], rvc[2]]
-        pick_pose_up = [temp_pose_up[0], temp_pose_up[1], temp_pose_up[2], rvc[0], rvc[1], rvc[2]]
+        # # transfer to rotation vector
+        # r = R.from_euler('xyz', temp_pose[3:6], degrees=False)
+        # rvc = r.as_rotvec()
+        # pick_pose = [temp_pose[0], temp_pose[1], temp_pose[2], rvc[0], rvc[1], rvc[2]]
+        # pick_pose_up = [temp_pose_up[0], temp_pose_up[1], temp_pose_up[2], rvc[0], rvc[1], rvc[2]]
         # 抓取
-        pick_place(robot, robot, home_joints, pick_pose, place_xyzrt)
+        pick_place(robot, robot, home_joints, temp_pose, place_xyzrt)

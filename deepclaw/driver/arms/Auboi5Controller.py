@@ -72,6 +72,8 @@ class AuboController(ArmController):
 
     def get_state(self, *args, **kwargs):
         self.robot.get_robot_state()
+        kk = self.robot.get_joint_status()
+        print(kk)
 
     def verify_state(self, *args, **kwargs):
         pass
@@ -80,6 +82,13 @@ class AuboController(ArmController):
 if __name__ == "__main__":
     os.chdir(ROOT)
     ss = AuboController('./configs/basic_config/robot_auboi5.yaml')
+    home_joint = [0, 0, 1.57, 0, 1.57, 0]
+    ss.move_j(home_joint, 1.5, 1.5)
+    time.sleep(0.01)
+    position = [0.470, -0.12, 0.212, 180, 0, 90]
+    ss.move_p(position, 5, 5)
+    ss.get_state()
+
 
 
 

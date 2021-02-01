@@ -1,0 +1,9 @@
+# the units of the parameters is m, rad, m/s, m/s^2, g, pixel
+#robot ip and port
+name: Franka1
+ip: 192.168.1.102
+port: 30003
+velocity: 60 #scale [0~100]
+acceleration: 1.2
+home_joint: [-1.095,-1.589,-2.122,-0.810,2.020,1.669,0]
+home_pose: None

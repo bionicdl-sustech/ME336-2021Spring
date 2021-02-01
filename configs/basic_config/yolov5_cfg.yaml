@@ -1,0 +1,16 @@
+# help='model.pt path(s)'
+weights: './configs/ICRA2020-ur5-azure-rg6/best_38.pt'
+img_size: 640
+conf_thres: 0.4
+iou_thres: 0.5
+# help='cuda device, i.e. 0 or 0,1,2,3 or cpu'
+device: '0'
+view_img: False
+print_result: False
+# help='filter by class': '', 0 or [0,1,2]
+classes: ''
+agnostic_nms: False
+# 'augmented inference'
+augment: False
+# 'update all models'
+update: False

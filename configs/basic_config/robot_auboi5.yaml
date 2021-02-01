@@ -1,0 +1,9 @@
+# the units of the parameters is m, rad, m/s, m/s^2, g, pixel
+#robot ip and port
+name: Auboi5
+ip: 192.168.0.100
+port: 8899
+velocity: 0.4
+acceleration: 0.6
+home_joint: [-1.41319307, -1.51162964, -1.66329875, -1.50447379,  1.53746051, 3.14490873]
+home_pose: None

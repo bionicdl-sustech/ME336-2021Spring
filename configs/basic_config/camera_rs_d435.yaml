@@ -1,0 +1,34 @@
+#camera parameters
+name: D435
+serial_number:
+# For D435, the resolution of RGB camera 320*180, 320*240, 424*240, 640*360, 640*480, 848*480, 960*540, 1280*720, 1920*1080
+# For 60 fps, the max resolution is 960*540. for 1280*720, 1920*1080 ,the max fps is 30.
+# for L515, the resolution of rgb is 1280*720, 60fps; 1920*1080, 30fps.
+color:
+  width: 1280
+  height: 720
+  fps: 30
+  exposure: None # None
+
+# the depth and infrared are corresponding, have same resolution
+# For D435, the resolution is multi, 640*480, 90fps; 1280*720, 30fps; 1280*800, 30fps
+# For L515, the resolution of rgb is 1024*768 or 640*480, and fps is 30
+depth_infrared:
+  width: 1280
+  height: 720
+  fps: 30
+
+
+# for realsense, the align function is depth image aligned to other images or vice versa.
+# color or depth
+align_image: 'color'
+
+
+#inner_matrix:
+## [fx,s,cx;0,fy,cy;0,0,1]
+#  - [500,0,300]
+#  - [0,520,200]
+#  - [0,0,1]
+#distortion_coefficients: [0,0,0,0,0]
+
+

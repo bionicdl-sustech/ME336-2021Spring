@@ -1,0 +1,14 @@
+initial_position: [-0.302, -0.777, 0.278, 1.1636, -1.2518, 1.2317]
+x_stride: 0.05
+y_stride: 0.05
+z_stride: 0.05
+E_T_F:
+  - [1,0,0,0.06]
+  - [0,1,0,0.00]
+  - [0,0,1,0.03]
+  - [0,0,0,1]
+OFFSET:
+  x: 0.06
+  y: 0.0
+  z: 0.03
+CALIBRATION_DIR: './configs/ICRA2020-ur5-azure-rg6/calib_Azure.npz'

@@ -114,8 +114,7 @@ class AuboController(ArmController):
         tcp_xyz = temp['pos']
         tcp_ori = temp['ori']
 
-        r = R.from_quat(tcp_ori)
-        reu = r.as_euler('xyz', degrees=False)
+        reu = self.robot.quaternion_to_rpy(tcp_ori)
 
         robot_state['TCP_Pose'] = [tcp_xyz[0], tcp_xyz[1], tcp_xyz[2], reu[0], reu[1], reu[2]]
         return robot_state

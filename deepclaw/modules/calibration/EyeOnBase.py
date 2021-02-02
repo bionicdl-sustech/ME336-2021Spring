@@ -102,7 +102,8 @@ class Calibration(object):
                     observed_pt = image_callback(color_image, depth_image, sensor_intrinsics)
 
                     current_pose = self.__arm.get_state()['TCP_Pose']
-                    current_matrix = rotvec2matrix(current_pose)
+                    # current_matrix = rotvec2matrix(current_pose)
+                    current_matrix = rpy2matrix(current_pose)
                     transfer_matrix = self.__cfg['E_T_F']
                     transfer_matrix = np.array(transfer_matrix)
                     end_in_base = np.dot(current_matrix, transfer_matrix)
@@ -143,6 +144,14 @@ def get_rigid_transform(A, B):
 
 def rotvec2matrix(xyzrpy):
     r = R.from_rotvec(xyzrpy[3:6])
+    temp_matrix = np.eye(4)
+    rotation = r.as_matrix()
+    temp_matrix[0:3, 0:3] = rotation
+    temp_matrix[0:3, 3] = xyzrpy[0:3]
+    return temp_matrix
+
+def rpy2matrix(xyzrpy):
+    r = R.from_euler('xyz', xyzrpy[3:6])
     temp_matrix = np.eye(4)
     rotation = r.as_matrix()
     temp_matrix[0:3, 0:3] = rotation

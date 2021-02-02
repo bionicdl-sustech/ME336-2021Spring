@@ -67,10 +67,10 @@ class AuboController(ArmController):
 
         self.robot.set_end_max_line_acc(acceleration)
         self.robot.set_end_max_line_velc(velocity)
-        position[3] = position[3] * 180.0 / 3.14159
-        position[4] = position[4] * 180.0 / 3.14159
-        position[5] = position[5] * 180.0 / 3.14159
-        self.robot.move_to_target_in_cartesian(position[0:3], position[3:6])
+        rx = position[3] * 180.0 / 3.14159
+        ry = position[4] * 180.0 / 3.14159
+        rz = position[5] * 180.0 / 3.14159
+        self.robot.move_to_target_in_cartesian(position[0:3], [rx, ry, rz])
         return True
 
     def get_state(self, *args, **kwargs):

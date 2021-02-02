@@ -11,16 +11,40 @@
 import sys
 import os
 import time
-import numpy as np
-
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 sys.path.append(ROOT)
 
+import numpy as np
+from scipy.spatial.transform import Rotation as R
 import yaml
 from deepclaw.driver.arms.aubo.robotcontrol import Auboi5Robot, RobotErrorType
 # from robotcontrol import Auboi5Robot
 from deepclaw.driver.arms.ArmController import ArmController
+
+
+robot_state = {'Joints': [],  # Actual joint positions
+               'Joints_Velocity': [],  # Actual joint velocities
+               'Joints_Current': [],  # Actual joint currents
+               'Joints_Voltage': [],  # Actual joint voltages
+               'Joints_Temperature': [],  # Temperature of each joint in degrees Celsius
+               'Joints_Target': [],  # Target joint positions
+               'Joints_Velocity_Target': [],  # Target joint velocities
+               'Joints_Acceleration_Target': [],  # Target joint accelerations
+               'Joints_Current_Target': [],  # Target joint currents
+               'Joints_Torque_Target': [],  # Target joint moments (torques)
+               'Joints_Current_Control': [],  # Joint control currents
+               'TCP_Pose': [],  # Actual Cartesian coordinates of the tool: (x,y,z,rx,ry,rz)
+               'TCP_Force': [],  # Generalized forces in the TCP
+               'TCP_Velocity': [],  # Actual speed of the tool given in Cartesian coordinates
+               'TCP_Acceleration': [],  # Tool x, y and z accelerometer values
+               'TCP_Pose_Target': [],  # Target Cartesian coordinates of the tool: (x,y,z,rx,ry,rz)
+               'TCP_Velocity_Target': [],  # Target speed of the tool given in Cartesian coordinates
+               'Speed_Fraction_Target': [],  # Target speed fraction, running speed fraction in teach pad
+               'Speed_Scaling': [],  # Speed scaling of the trajectory limiter
+               'Momentum': [],  # Norm of Cartesian linear momentum
+               'isProtectiveStopped': []  # a bool indicating if the robot is in ‘Protective stop’
+               }
 
 
 class AuboController(ArmController):
@@ -73,10 +97,28 @@ class AuboController(ArmController):
         self.robot.move_to_target_in_cartesian(position[0:3], [rx, ry, rz])
         return True
 
-    def get_state(self, *args, **kwargs):
-        self.robot.get_robot_state()
-        kk = self.robot.get_joint_status()
-        print(kk)
+    def get_state(self):
+        gear_state = self.robot.get_joint_status()
+        robot_state['Joints_Current'] = [gear_state['joint1']['current'], gear_state['joint2']['current'],
+                                         gear_state['joint3']['current'], gear_state['joint4']['current'],
+                                         gear_state['joint5']['current'], gear_state['joint6']['current']]
+
+        robot_state['Joints_Voltage'] = [gear_state['joint1']['voltage'], gear_state['joint2']['voltage'],
+                                         gear_state['joint3']['voltage'], gear_state['joint4']['voltage'],
+                                         gear_state['joint5']['voltage'], gear_state['joint5']['voltage']]
+        robot_state['Joints_Temperature'] = [gear_state['joint1']['temperature'], gear_state['joint2']['temperature'],
+                                             gear_state['joint3']['temperature'], gear_state['joint4']['temperature'],
+                                             gear_state['joint5']['temperature'], gear_state['joint6']['temperature']]
+        temp = self.robot.get_current_waypoint()
+        robot_state['Joints'] = temp['joint']
+        tcp_xyz = temp['pos']
+        tcp_ori = temp['ori']
+
+        r = R.from_quat(tcp_ori)
+        reu = r.as_euler('xyz', degrees=False)
+
+        robot_state['TCP_Pose'] = [tcp_xyz[0], tcp_xyz[1], tcp_xyz[2], reu[0], reu[1], reu[2]]
+        return robot_state
 
     def verify_state(self, *args, **kwargs):
         pass
@@ -88,7 +130,7 @@ if __name__ == "__main__":
     home_joint = [0, 0, 1.57, 0, 1.57, 0]
     ss.move_j(home_joint, 1.5, 1.5)
     time.sleep(0.01)
-    position = [0.470, -0.12, 0.212, 3.14159, 0, 90]
+    position = [0.470, -0.12, 0.212, 3.14159, 0, 0]
     ss.move_p(position, 5, 5)
     ss.get_state()
 

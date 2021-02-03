@@ -45,7 +45,12 @@ def inverse_kinematic_optimization(chain, target_frame, starting_nodes_angles, r
 
         iter_rotation = chain.forward_kinematics(y)[0:3, 0:3]
         diff_r = np.dot(iter_rotation,np.linalg.pinv(target_orientation))
-        angle_error = math.acos((np.trace(diff_r)-1)/2)
+        temp = (np.trace(diff_r)-1)/2
+        if temp > 1:
+            temp = 1
+        elif temp < -1:
+            temp = -1
+        angle_error = math.acos(temp)
         angle_error = np.linalg.norm(angle_error)
 
         squared_distance = 0.8*posi + 0.2*angle_error

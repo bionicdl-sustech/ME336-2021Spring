@@ -29,24 +29,25 @@ from deepclaw.driver.arms.URController_rtde import URController
 from deepclaw.modules.grasp_planning.GeoGrasp import GeoGrasp
 
 
-def pick_place(robot_server: ArmController, gripper_server: object, home_joint, pick_xyzrt, place_xyzrt):
+def pick_place(robot_server: ArmController, gripper_server: object, home_joint, pick_xyzrt, pick_xyzrt_up, place_xyzrt):
     # go to pick above
     up_pos = pick_xyzrt.copy()
     up_pos[2] = up_pos[2] + 0.1
-
-    robot_server.move_p(up_pos, 1.5, 1.5)
+    robot_server.move_p(pick_xyzrt_up, 1.5, 1.5)
+    time.sleep(0.1)
     # go to pick
     robot_server.move_p(pick_xyzrt, 1.5, 1.5)
+    time.sleep(0.1)
     # pick
-    gripper_server.set_tool_out(0, True)
+    #gripper_server.set_tool_out(0, True)
     time.sleep(1)
     # go up
     robot_server.move_p(up_pos, 1.5, 1.5)
-
+    time.sleep(0.1)
     # go to release
     robot_server.move_p(place_xyzrt, 2.5, 2.5)
     # release
-    gripper_server.set_tool_out(0, False)
+    #gripper_server.set_tool_out(0, False)
     time.sleep(0.8)
     # go back home
     robot_server.move_j(home_joint, 1.5, 1.5)
@@ -115,10 +116,10 @@ if __name__ == '__main__':
         # transfer to point cloud
         width = 1280
         hight = 720
-        fx = 602.365
-        fy = 602.393
-        cx = 636.734
-        cy = 363.352
+        fx = 640.983
+        fy = 640.983
+        cx = 641.114
+        cy = 368.461
         pc = []
         for i in range(uv[1], uv[3]):
             temp_pc = []
@@ -212,4 +213,4 @@ if __name__ == '__main__':
         # pick_pose = [temp_pose[0], temp_pose[1], temp_pose[2], rvc[0], rvc[1], rvc[2]]
         # pick_pose_up = [temp_pose_up[0], temp_pose_up[1], temp_pose_up[2], rvc[0], rvc[1], rvc[2]]
         # 抓取
-        pick_place(robot, robot, home_joints, temp_pose, place_xyzrt)
+        pick_place(robot, robot, home_joints, temp_pose, temp_pose_up, place_xyzrt)

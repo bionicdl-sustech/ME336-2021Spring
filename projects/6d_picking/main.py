@@ -114,6 +114,7 @@ if __name__ == '__main__':
             continue
         """ generate grasping pose"""
         # transfer to point cloud
+        # depth intrinsics
         width = 1280
         hight = 720
         fx = 640.983

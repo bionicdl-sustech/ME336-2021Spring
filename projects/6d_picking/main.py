@@ -93,12 +93,12 @@ if __name__ == '__main__':
     camera = Realsense('./configs/basic_config/camera_rs.yaml')
     object_detector = Yolo5('./configs/ICRA2020-ur5-azure-rg6/detection_cfg.yaml')
 
-    home_joints = [1, 2, 3, 4, 5, 6]
+    home_joints = [0, 0.7, 2.0, -0.2, 1.57, 0]
     robot.move_j(home_joints, 1.5, 1.5)
 
     """ start picking loop"""
-    place_xyzrt = [1, 2, 3, 4, 5, 6]
-    crop_bounding = [200, 470, 360, 720]
+    place_xyzrt = [0.5, -0.4, 0.3, 3.14, 0, 0]
+    crop_bounding = [300, 720, 300, 1000]
     hand_eye_matrix = np.load('./configs/ICRA2020-ur5-azure-rg6/E_T_B.npy')
     while 1:
         frame = camera.get_frame()
@@ -106,7 +106,7 @@ if __name__ == '__main__':
         depth_img = frame.depth_image[0]
         # 识别物体
         # region_class = object_detector.detect(color)
-        ret, uv, cla, cfi = detectObject(object_detector, crop_bounding=[200, 470, 360, 720])
+        ret, uv, cla, cfi = detectObject(object_detector, crop_bounding=[300, 720, 300, 1000])
         if not ret:
             continue
         if cla not in [0, 1, 2, 3]:
@@ -190,9 +190,10 @@ if __name__ == '__main__':
         print(rot_matrix)
         print('=========== modified -z grasping_in_base ==============')
         print(grasping_in_base)
-        # z offset
-        E_T_F = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0.033], [0, 0, 0, 1]])
-        grasping_in_base = np.dot(grasping_in_base, E_T_F)
+        # gripper to flange matrix
+        E_T_F = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0.133], [0, 0, 0, 1]])
+        # grasping_in_base = np.dot(grasping_in_base, E_T_F)
+        grasping_in_base = np.dot(grasping_in_base, np.linalg.inv(E_T_F))
 
         r = R.from_matrix(grasping_in_base[0: 3, 0: 3])
         rot = r.as_euler('xyz', degrees=False)

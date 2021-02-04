@@ -68,7 +68,7 @@ class FrankaController(ArmController):
     def getJoint(self):
         return self.fk.getJointPos()
 
-    def getState(self):
+    def get_state(self):
         current_state = self.fk.getAllState()
         current_state = eval(current_state)
         

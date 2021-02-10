@@ -5,12 +5,17 @@
 
 """
 @Modified: 
-@Description:
+@Description: remove background, includes algorithms: image difference, color filter, MOG2, grabCut, rembg.
 """
 
 import time
 import cv2
 import numpy as np
+from PIL import Image
+import io
+import matplotlib.pyplot as plt
+from rembg.u2net import detect
+from rembg.bg import get_model, naive_cutout, remove
 
 
 class BackgroundDetector(object):
@@ -19,7 +24,7 @@ class BackgroundDetector(object):
         self.fgbg = None
 
     def diffGround(self, groundImg, currrentImg, img_threshold=10, show_mask=False):
-        """ generate mask from a background image"""
+        """ generate mask from a background image, find the difference between the ground image and current image"""
         # transfer to gray image
         groundImg_gray = cv2.cvtColor(groundImg, cv2.COLOR_BGR2GRAY)
         groundBlur = cv2.GaussianBlur(groundImg_gray, (3, 3), 1)
@@ -62,7 +67,8 @@ class BackgroundDetector(object):
             # self.fgmask = cv2.medianBlur(self.fgmask, 5)
 
     def multiFrameFilter(self, color_img, show_mask=False):
-        """ create Gaussian Mixture Model from multi images as background"""
+        """ create Gaussian Mixture Model from multi images as background,
+        find the difference between the current image and Gaussian Model"""
         gray = cv2.cvtColor(color_img, cv2.COLOR_BGR2GRAY)
         mask = self.fgbg.apply(gray, self.fgmask, 0)
         # median filter
@@ -76,7 +82,52 @@ class BackgroundDetector(object):
             cv2.waitKey()
         return mask
 
+    def rembg_from_file(self, file_path, show_image=False):
+        """ Rembg is a tool to remove images background. https://github.com/danielgatis/rembg.
+        the input of this function is file path, such as 'xx.jpg' """
+        with open(file_path, "rb") as input:
+            if hasattr(input, "buffer"):
+                ss = input.buffer.read()
+            else:
+                ss = input.read()
+        result = remove(ss)
+        img = Image.open(io.BytesIO(result)).convert("RGBA")
+        img = np.array(img)
+        # alpha value
+        mask_binary = img[:, :, 3]
+        mask_binary[mask_binary > 10] = 255
+        mask_binary[mask_binary <= 10] = 0
+        if show_image:
+            plt.imshow(img)
+            plt.show()
+        return mask_binary
+
+    def rembg_from_array(self, image, show_image=False):
+        """ Rembg is a tool to remove images background. https://github.com/danielgatis/rembg .
+        the input of this function is numpy array """
+        image = Image.fromarray(image.astype('uint8'), 'RGB')
+        model_name = "u2net"
+        model = get_model(model_name)
+        mask = detect.predict(model, np.array(image)).convert("L")
+
+        cutout = naive_cutout(image, mask)
+        bio = io.BytesIO()
+        cutout.save(bio, "PNG")
+        result = bio.getbuffer()
+        img = Image.open(io.BytesIO(result)).convert("RGBA")
+        img = np.array(img)
+        # alpha value
+        mask_binary = img[:, :, 3]
+        mask_binary[mask_binary > 10] = 255
+        mask_binary[mask_binary <= 10] = 0
+        if show_image:
+            plt.imshow(img)
+            plt.show()
+        return mask_binary
+
     def grabCut_rect(self, color_img, rect=[200, 0, 900, 720]):
+        """ GrabCut is an algorithm for foreground extraction with minimal user interaction """
+        """ https://docs.opencv.org/master/d8/d83/tutorial_py_grabcut.html"""
         """ rect = [col_min, row_min, col_max, row_max]"""
         mask = np.zeros(color_img.shape[:2], np.uint8)
         bgdModel = np.zeros((1, 65), np.float64)
@@ -93,9 +144,9 @@ class BackgroundDetector(object):
         mask[mask != 0] = 1
         bgdModel = np.zeros((1, 65), np.float64)
         fgdModel = np.zeros((1, 65), np.float64)
-        mask, bgdModel, fgdModel = cv2.grabCut(color_img, mask, None, bgdModel, fgdModel, 5, cv2.GC_INIT_WITH_MASK)
-        mask = np.where((mask == 2) | (mask == 0), 0, 1).astype('uint8')
-        return mask
+        mask2, bgdModel, fgdModel = cv2.grabCut(color_img, mask, None, bgdModel, fgdModel, 5, cv2.GC_INIT_WITH_MASK)
+        mask2 = np.where((mask2 == 2) | (mask2 == 0), 0, 1).astype('uint8')
+        return mask2
 
     def getConnectedDomain(self, binary_img, connectivity=4, region_area=1000, show_label=False):
         """ obtain connected domain"""

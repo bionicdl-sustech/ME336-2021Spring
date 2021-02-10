@@ -1,6 +1,6 @@
 utils
 
-## Record image
+## Save single image or video
 **Location**: deepclaw/utils/RecordImage.py  
  
 **Description**: Collecting images form a camera, and save the image stream as video or single image.   
@@ -18,25 +18,34 @@ utils
 ```
 CAMERA_CFG is your camera configuration.
 
-## Collect image
-**Location**: deepclaw/utils/selfSuperviseImageCollection.py   
+## Auto collect image
+**Location**: deepclaw/utils/ImageDataCollection.py   
 
-**Description**: Auto collect images. 
+**Description**: Auto collect images(color, depth, infrared). 
   
 **usage**: 
 ```
-    from deepclaw.utils.SelfSuperviseImageCollection.py import ImageCollection
-    c1 = Realsense(CAMERA_CFG)
+    c1 = CAMERA_DRIVER
     test = ImageCollection([c1])
-    test.setObjectClass("plastic")
-    test.run(saved_folder_path='./projects/Test/', auto_label=True, ref_img=['./ref.avi'])
+    test.run(saved_folder_path='./projects/ICRA2020/', show_flag=True)
 ```
-the ref_img can be got from record image function.
+
+the saved image folder structure is showed below:
+```
+    GraspingData
+    ├── 20210125184650
+    │   └── camera0
+    │       ├── images
+    │       │   ├── color
+    │       │   ├── depth
+    │       └─  └── infrared
+```
+
 
 ## Background detector
 **Location**: deepclaw/utils/ForegroundDetector.py  
  
-**Description**: Detect objects in the background. Include image subtraction, color filter, MOG2, grabCut. 
+**Description**: Detect objects in the background. Include image difference, color filter, MOG2, grabCut, rembg. 
 
 **usage**:  
 ```
@@ -70,6 +79,20 @@ the ref_img can be got from record image function.
     file_list.sort()
     save_label(file_list, label_path, region_parameter, obj_class=obj_class, detect_algo='rembg')
 ```
+## transfer mask to other format labels
+**Location**: deepclaw/utils/label_format.py  
+ 
+**Description**: transfer mask format to other label format(yolo, coco .ect). 
+
+**usage**:  
+```
+    folder_path = './GraspingData/metal'
+    ss = LabelGenerator(input_path=folder_path)
+    ss.set_object_class('metal')
+    ss.transfer2yolo()
+```
+Todo: add other data sets format.
+
 ## Record robot state
 **Location**: deepclaw/utils/RecorderRobotData.py   
 

@@ -51,7 +51,7 @@ class LabelGenerator(object):
         """ yolo label file is a txt file,
         each label information in it is 'class norm_center_x norm_center_y norm_width norm_height' """
         """ """
-        yolo_label_path = 'lables_yolo'
+        yolo_label_path = 'labels_yolo'
         for i in self.folder_list:
             temp_mask_list = get_mask_list(i, camera_id=self.cameraID, label_folder=self.src_label)
             # create label folder

@@ -32,6 +32,7 @@ class Calibration2D(object):
         self.image2baseMatrix = cv2.getPerspectiveTransform(pts1, pts2)
 
     def cvt(self, u, v):
+        """image to robot base"""
         pick_point = [u, v]
         grasp_point = np.array([[pick_point]], dtype=np.float32)
         gp_base = cv2.perspectiveTransform(grasp_point, self.image2baseMatrix)
@@ -39,8 +40,19 @@ class Calibration2D(object):
         y = gp_base[0][0][1]
         return x, y
 
+    def robot2img(self, x, y):
+        """robot base to image"""
+        pick_point = [x, y]
+        grasp_point = np.array([[pick_point]], dtype=np.float32)
+        temp = cv2.perspectiveTransform(grasp_point, np.linalg.inv(self.image2baseMatrix))
+        return temp[0][0][0], temp[0][0][1]
+
 
 if __name__ == '__main__':
     path = '../../../configs/ICRA2020-ur5-azure-rg6/cali2D.yaml'
     hand_eye = Calibration2D(path)
     print(hand_eye.cvt(471, 554))
+    print(hand_eye.image2baseMatrix)
+    print(hand_eye.robot2img(-0.22718306, -0.96182245))
+
+

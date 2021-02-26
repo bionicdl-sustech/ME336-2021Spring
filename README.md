@@ -12,10 +12,13 @@ This repository is intended for the lab session of [ME336](https://ancorasir.com
 
 ## Lab Demonstration Projects
 
-Projects related to deep learning:
-- [HandeyeCalibration](./HandeyeCalibration): Handeye calibration code
-- [3DPicking](./3DPicking): Example project of 3D picking 
-- [6DPicking](./6DPicking): Example project of 6D picking 
+Basic Training:
+- [Handeye Calibration](./deepclaw/modules/calibration/): Handeye calibration code including 2D and 3D handeye calibration.
+- [Data Collection & Labeling](./deepclaw/utils/ImageDataCollection.py): Collect training data of waste sorting.
+
+Sample Projects:
+- [2D Picking](./projects/2d_picking): Sample project of 2D picking 
+- [6D Picking](./projects/6d_picking): Sample project of 6D picking 
 
 Projects related to reinforcement learning:
 - [MadMario](./MadMario): PyTorch tutorial to build an AI-powered Mario. This example is to learn the Double Q-learning (DDQN) algorithm in reinforcement learning.

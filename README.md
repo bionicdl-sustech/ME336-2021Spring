@@ -23,6 +23,9 @@ Sample Projects:
 Projects related to reinforcement learning:
 - [MadMario](./MadMario): PyTorch tutorial to build an AI-powered Mario. This example is to learn the Double Q-learning (DDQN) algorithm in reinforcement learning.
 - [Muzero](./Muzero): The example is to learn the state of the art RL algorithm for board games (Chess, Go, ...) and Atari games. Optional for students who are interested.
+- [RL-TaxiV3_Tabular_Q_learning.ipynb](RL-TaxiV3_Tabular_Q_learning.ipynb): train a tabular Q-learning agent on the smart taxi task.
+- [RL-CartPole_DQN.ipynb](RL-CartPole_DQN.ipynb): train a Deep Q Learning (DQN) agent on the CartPole-v0 task.
+- [RL-CartPole_A2C_online.ipynb](RL-CartPole_A2C_online.ipynb): train a Advance Actor Critic (A2C) agent on the CartPole-v0 task.
 - [DoorGym](./DoorGym)
 
 ## Lab Assignment Projects

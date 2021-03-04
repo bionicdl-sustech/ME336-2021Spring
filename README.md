@@ -1,6 +1,6 @@
 # ME336 Collaborative Robot Learning, Spring 2021 <!-- omit in toc -->
 
-This repository is intended for the lab session of [ME336](https://ancorasir.com/?page_id=2320) by [the Bionic Design and Learning Lab](https://ancorasir.com/) at [Southern University of Science and Technology](https://www.sustech.edu.cn/). This course was also offered during the Spring of [2019](https://ancorasir.com/?page_id=1310) and [2020](https://ancorasir.com/?page_id=2320)
+This repository is intended for the lab session of [ME336](https://ancorasir.com/?page_id=2320) by [the Bionic Design and Learning Lab](https://ancorasir.com/) at [Southern University of Science and Technology](https://www.sustech.edu.cn/). This course was also offered during the Spring of [2019](https://ancorasir.com/?page_id=1310) and [2020](https://ancorasir.com/?page_id=2320).
 - Course Instructor
   - Prof. Song Chaoyang
   - Dr. Wan Fang
@@ -26,9 +26,11 @@ Projects related to reinforcement learning:
 - [RL-TaxiV3_Tabular_Q_learning.ipynb](RL-TaxiV3_Tabular_Q_learning.ipynb): train a tabular Q-learning agent on the smart taxi task.
 - [RL-CartPole_DQN.ipynb](RL-CartPole_DQN.ipynb): train a Deep Q Learning (DQN) agent on the CartPole-v0 task.
 - [RL-CartPole_A2C_online.ipynb](RL-CartPole_A2C_online.ipynb): train a Advance Actor Critic (A2C) agent on the CartPole-v0 task.
-- [DoorGym](./DoorGym)
 
 ## Lab Assignment Projects
 - Project 1: 2D Picking of (x,y)
 - Project 2: 3D Picking of (x,y,z)
 - Project 3: Your Proposed projects
+
+## Installation and 
+For the step-by-step instructions on the projects, please refer the doc for [Franka](https://bionicdl.feishu.cn/docs/doccnfGyDtcYwfkxvA0mFD2CVkd#) and Aubo. Please request for access if you don't have.

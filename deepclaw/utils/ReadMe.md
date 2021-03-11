@@ -27,7 +27,7 @@ CAMERA_CFG is your camera configuration.
 ```
     c1 = CAMERA_DRIVER
     test = ImageCollection([c1])
-    test.run(saved_folder_path='./projects/ICRA2020/', show_flag=True)
+    test.run(saved_folder_path=YourSavedPath, show_flag=True)
 ```
 
 the saved image folder structure is showed below:

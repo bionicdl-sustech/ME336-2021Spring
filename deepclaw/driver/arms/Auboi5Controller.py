@@ -22,7 +22,6 @@ from deepclaw.driver.arms.aubo.robotcontrol import Auboi5Robot, RobotErrorType
 # from robotcontrol import Auboi5Robot
 from deepclaw.driver.arms.ArmController import ArmController
 
-
 robot_state = {'Joints': [],  # Actual joint positions
                'Joints_Velocity': [],  # Actual joint velocities
                'Joints_Current': [],  # Actual joint currents
@@ -75,13 +74,14 @@ class AuboController(ArmController):
                solution_space='Joint'):
         velocity = self._v if velocity is None else velocity
         acceleration = self._a if acceleration is None else acceleration
-        self.robot.set_joint_maxacc((acceleration, acceleration, acceleration, acceleration, acceleration, acceleration))
+        self.robot.set_joint_maxacc(
+            (acceleration, acceleration, acceleration, acceleration, acceleration, acceleration))
         self.robot.set_joint_maxvelc((velocity, velocity, velocity, velocity, velocity, velocity))
 
         self.robot.move_joint(joints_angle)
         return True
 
-    def move_p(self, position, velocity=None, acceleration=None, blend = 0.0,
+    def move_p(self, position, velocity=None, acceleration=None, blend=0.0,
                solution_space='Space'):
         # position = [x,y,z,r, p, y]
         # pos: position（x, y, z）;unit: m
@@ -122,22 +122,16 @@ class AuboController(ArmController):
     def verify_state(self, *args, **kwargs):
         pass
 
+    def get_current_point(self):
+        return self.robot.get_current_waypoint()
+
 
 if __name__ == "__main__":
     os.chdir(ROOT)
     ss = AuboController('./configs/basic_config/robot_auboi5.yaml')
-    home_joint = [0, 0, 1.57, 0, 1.57, 0]
-    ss.move_j(home_joint, 1.5, 1.5)
-    time.sleep(0.01)
-    position = [0.470, -0.12, 0.212, 3.14159, 0, 0]
-    ss.move_p(position, 5, 5)
-    ss.get_state()
 
+    position = [0.3 , -0.1, 0.3, 3.14 ,0 , 1.57]
+    #ss.move_p(position, 5, 5)
 
-
-
-
-
-
-
-
+    state = ss.get_state()
+    print(state)

@@ -25,8 +25,9 @@ from scipy.spatial.transform import Rotation as R
 from deepclaw.driver.arms.ArmController import ArmController
 from deepclaw.modules.end2end.yolov5.YOLO5 import Yolo5
 from deepclaw.driver.sensors.camera.Realsense_L515 import Realsense
-from deepclaw.driver.arms.URController_rtde import URController
+
 from deepclaw.modules.calibration.Calibration2D import Calibration2D
+from deepclaw.driver.arms.franka.FrankaController import FrankaController
 
 
 def pick_place(robot_server: ArmController, gripper_server: object, home_joint, pick_xyzrt, place_xyzrt):
@@ -35,28 +36,33 @@ def pick_place(robot_server: ArmController, gripper_server: object, home_joint, 
     up_pos[2] = up_pos[2] + 0.1
 
     robot_server.move_p(up_pos, 1.5, 1.5)
+    time.sleep(0.01)
     # go to pick
     robot_server.move_p(pick_xyzrt, 1.5, 1.5)
     # pick
-    gripper_server.set_tool_out(0, True)
+    #gripper_server.set_tool_out(0, True)
     time.sleep(1)
     # go up
     robot_server.move_p(up_pos, 1.5, 1.5)
+    time.sleep(0.01)
+    print('##############################')
 
     # go to release
     robot_server.move_p(place_xyzrt, 2.5, 2.5)
+    print('##############################')
     # release
-    gripper_server.set_tool_out(0, False)
+    #gripper_server.set_tool_out(0, False)
     time.sleep(0.8)
     # go back home
     robot_server.move_j(home_joint, 1.5, 1.5)
+    time.sleep(0.01)
 
 
-def detectObject(detector_algo: Yolo5, color, crop_bounding=[200, 470, 360, 720]):
+def detectObject(detector_algo: Yolo5, crop_bounding=[340, 700, 340, 1200]):
     region_class = detector_algo.detect(color)
     if region_class is None:
         return False, None, None, None
-
+    print(crop_bounding)
     # object on the tray
     uv_roi = []
     cla_roi = []
@@ -88,23 +94,33 @@ def detectObject(detector_algo: Yolo5, color, crop_bounding=[200, 470, 360, 720]
 if __name__ == '__main__':
     """ Initialization """
     # camera and robot driver
-    robot = URController('./configs/robcell-ur5-rg6-d435/ur5.yaml')
-    camera = Realsense('./configs/basic_config/camera_rs.yaml')
-    object_detector = Yolo5('./configs/ICRA2020-ur5-azure-rg6/detection_cfg.yaml')
+    robot = FrankaController('./configs/basic_config/franka.yaml')
+    camera = Realsense('./configs/basic_config/camera_rs_d435.yaml')
+    object_detector = Yolo5 ('./configs/basic_config/yolov5_cfg.yaml')
 
-    home_joints = [1, 2, 3, 4, 5, 6]
+    home_joints = [-0.0347, -0.6137, 0.0812, -2.175, 0.0849, 1.7349, 0.4538]
     robot.move_j(home_joints, 1.5, 1.5)
 
     """ start picking loop"""
-    place_xyzrt = [1, 2, 3, 4, 5, 6]
-    crop_bounding = [200, 470, 360, 720]
-    cali_path = './configs/ICRA2020-ur5-azure-rg6/cali2D.yaml'
+    place_xyzrt = [0.3, 0.0, 0.4, 3.14, 0.0, 0.0]
+    crop_bounding = [340, 700, 340, 1200]
+    cali_path = './configs/basic_config/cali2D.yaml'
+
+    show_rect_flag = 0
+    if show_rect_flag:
+        frame = camera.get_frame()
+        color = frame.color_image[0]
+        xx = color[crop_bounding[0]:crop_bounding[1], crop_bounding[2]:crop_bounding[3]]
+        fig = plt.figure("rect")
+        plt.imshow(xx)
+        plt.show()
+
     while 1:
         frame = camera.get_frame()
         color = frame.color_image[0]
         # 识别物体
         # region_class = object_detector.detect(color)
-        ret, uv, cla, cfi = detectObject(object_detector, color, crop_bounding=[200, 470, 360, 720])
+        ret, uv, cla, cfi = detectObject(object_detector, crop_bounding)
         if not ret:
             continue
         if cla not in [0, 1, 2, 3]:
@@ -117,7 +133,7 @@ if __name__ == '__main__':
         # row
         vy = (uv[1] + uv[3]) / 2.0
         temp = hand_eye.cvt(ux, vy)
-        z = 0.037
+        z = 0.2
         if abs(uv[2] - uv[0]) >= abs(uv[3] - uv[1]):
             angle = 0.0
         else:

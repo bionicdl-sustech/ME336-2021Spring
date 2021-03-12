@@ -1,6 +1,7 @@
 # pip install -r requirements.txt
 
 # base ----------------------------------------
+# ---------------------------L
 Cython
 matplotlib>=3.2.2
 numpy>=1.18.5
@@ -15,4 +16,6 @@ pyrealsense2
 torch==1.6.0
 torchvision==0.7.0
 
+#---------------F
+sympy
 

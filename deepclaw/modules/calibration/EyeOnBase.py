@@ -171,23 +171,26 @@ def matrix2rv(matrix4):
 
 
 if __name__ == "__main__":
-    collect_flag = False
-    calculate_flag = True
+    '''
+    collect_flag = True
+    calculate_flag = False
+    '''
+    collect_flag = True
+    calculate_flag = False
     if collect_flag:
         # collect calibration data
-        from deepclaw.driver.sensors.camera.AzureKinect import AzureKinect
         from deepclaw.driver.sensors.camera.Realsense_L515 import Realsense
-        from deepclaw.driver.arms.URController_rtde import URController
+        from deepclaw.driver.arms.Auboi5Controller import AuboController
         import time
-        camera = AzureKinect()
+        camera = Realsense('./configs/basic_config/camera_rs_d435.yaml')
         # camera = Realsense('./configs/basic_config/camera_rs.yaml')
         time.sleep(1)
         frame = camera.get_frame()
         color_img = frame.color_image[0]
         depth_img = frame.depth_image[0]
         # calibrate
-        robot = URController('./configs/basic_config/robot_ur5.yaml')
-        calib_ins = Calibration(robot, camera, './configs/ICRA2020-ur5-azure-rg6/calib_cfg.yaml', main_sensor='color')
+        robot = AuboController('./configs/basic_config/robot_auboi5.yaml')
+        calib_ins = Calibration(robot, camera, './configs/basic_config/cali3D.yaml', main_sensor='color')
         calib_ins.run()
 
     if calculate_flag:

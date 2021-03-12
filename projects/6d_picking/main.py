@@ -1,4 +1,5 @@
-# MIT License.
+
+# MIT License.1
 # Copyright (c) 2021 by BioicDL. All rights reserved.
 # Created by LiuXb on 2021/1/31
 # -*- coding:utf-8 -*-
@@ -10,6 +11,7 @@
 import sys
 import os
 # append the DeepClawDev directory to python path and set it as working directory
+
 _root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(_root_path)
 os.chdir(_root_path)
@@ -25,7 +27,7 @@ from scipy.spatial.transform import Rotation as R
 from deepclaw.driver.arms.ArmController import ArmController
 from deepclaw.modules.end2end.yolov5.YOLO5 import Yolo5
 from deepclaw.driver.sensors.camera.Realsense_L515 import Realsense
-from deepclaw.driver.arms.URController_rtde import URController
+from deepclaw.driver.arms.franka.FrankaController import FrankaController
 from deepclaw.modules.grasp_planning.GeoGrasp import GeoGrasp
 
 
@@ -33,27 +35,27 @@ def pick_place(robot_server: ArmController, gripper_server: object, home_joint, 
     # go to pick above
     up_pos = pick_xyzrt.copy()
     up_pos[2] = up_pos[2] + 0.1
-    robot_server.move_p(pick_xyzrt_up, 1.5, 1.5)
+    robot_server.move_p(pick_xyzrt_up, 0.5, 0.5)
     time.sleep(0.1)
     # go to pick
-    robot_server.move_p(pick_xyzrt, 1.5, 1.5)
+    robot_server.move_p(pick_xyzrt, 0.5, 0.5)
     time.sleep(0.1)
     # pick
     #gripper_server.set_tool_out(0, True)
     time.sleep(1)
     # go up
-    robot_server.move_p(up_pos, 1.5, 1.5)
+    robot_server.move_p(up_pos, 0.5, 0.5)
     time.sleep(0.1)
     # go to release
-    robot_server.move_p(place_xyzrt, 2.5, 2.5)
+    robot_server.move_p(place_xyzrt, 0.5, 0.5)
     # release
     #gripper_server.set_tool_out(0, False)
     time.sleep(0.8)
     # go back home
-    robot_server.move_j(home_joint, 1.5, 1.5)
+    robot_server.move_j(home_joint, 0.5, 0.5)
 
 
-def detectObject(detector_algo: Yolo5, crop_bounding=[200, 470, 360, 720]):
+def detectObject(detector_algo: Yolo5, color, crop_bounding=[300, 720, 300, 1000]):
     region_class = detector_algo.detect(color)
     if region_class is None:
         return False, None, None, None
@@ -89,24 +91,35 @@ def detectObject(detector_algo: Yolo5, crop_bounding=[200, 470, 360, 720]):
 if __name__ == '__main__':
     """ Initialization """
     # camera and robot driver
-    robot = URController('./configs/robcell-ur5-rg6-d435/ur5.yaml')
-    camera = Realsense('./configs/basic_config/camera_rs.yaml')
-    object_detector = Yolo5('./configs/ICRA2020-ur5-azure-rg6/detection_cfg.yaml')
+    print('work_dir: ', _root_path)
+    robot = FrankaController('./configs/basic_config/franka.yaml')
+    camera = Realsense('./configs/basic_config/camera_rs_d435.yaml')
+    object_detector = Yolo5('./configs/basic_config/yolov5_cfg.yaml')
 
-    home_joints = [0, 0.7, 2.0, -0.2, 1.57, 0]
+    home_joints = [-0.0347, -0.6137, 0.0812, -2.175, 0.0849, 1.7349, 0.4538]
+
     robot.move_j(home_joints, 1.5, 1.5)
 
     """ start picking loop"""
-    place_xyzrt = [0.5, -0.4, 0.3, 3.14, 0, 0]
+    place_xyzrt = [0.3, 0.0, 0.4, 3.14, 0.0, 0.0]
     crop_bounding = [300, 720, 300, 1000]
-    hand_eye_matrix = np.load('./configs/ICRA2020-ur5-azure-rg6/E_T_B.npy')
+    hand_eye_matrix = np.load('./configs/E_T_B.npy')
+    show_rect_flag = True
+    if show_rect_flag:
+        frame = camera.get_frame()
+        color = frame.color_image[0]
+        xx = color[crop_bounding[0]:crop_bounding[1], crop_bounding[2]:crop_bounding[3]]
+        fig = plt.figure("rect")
+        plt.imshow(xx)
+        plt.show()
+
     while 1:
         frame = camera.get_frame()
         color = frame.color_image[0]
         depth_img = frame.depth_image[0]
         # 识别物体
         # region_class = object_detector.detect(color)
-        ret, uv, cla, cfi = detectObject(object_detector, crop_bounding=[300, 720, 300, 1000])
+        ret, uv, cla, cfi = detectObject(object_detector, color, crop_bounding=[300, 720, 300, 1000])
         if not ret:
             continue
         if cla not in [0, 1, 2, 3]:
@@ -134,6 +147,21 @@ if __name__ == '__main__':
                     temp_pc.append([x, y, z])
             pc.append(temp_pc)
         pc = np.array(pc).reshape((-1, 3))
+
+        show_pc_flag = True
+        if show_pc_flag:
+            fig = plt.figure("ori_pcs")
+            ax = fig.add_subplot(111, projection="3d")
+            ax.scatter(pc[:, 0], pc[:, 1], pc[:, 2], s=1,)
+            ax.set_xlabel("x")
+            ax.set_ylabel("y")
+            ax.set_zlabel("z")
+            ax.set_xlim(-1, 1)
+            ax.set_ylim(-1, 1)
+            ax.set_zlim(0.5, 2)
+            ax.view_init(elev=-90, azim=-90)
+            plt.show()
+
         # filter plane
         plane_model = [-0.07, 0.25, 0.97, -0.98]
         new_pc = []
@@ -142,18 +170,19 @@ if __name__ == '__main__':
                 new_pc.append(pc[i])
 
         new_pc = np.array(new_pc)
-        # if is_debug:
-        #     fig = plt.figure("pcs")
-        #     ax = fig.add_subplot(111, projection="3d")
-        #     ax.scatter(new_pc[:, 0], new_pc[:, 1], new_pc[:, 2], s=1,)
-        #     ax.set_xlabel("x")
-        #     ax.set_ylabel("y")
-        #     ax.set_zlabel("z")
-        #     ax.set_xlim(-1, 1)
-        #     ax.set_ylim(-1, 1)
-        #     ax.set_zlim(0.5, 2)
-        #     ax.view_init(elev=-90, azim=-90)
-        #     plt.show()
+        show_flag = True
+        if show_flag:
+            fig = plt.figure("pcs")
+            ax = fig.add_subplot(111, projection="3d")
+            ax.scatter(new_pc[:, 0], new_pc[:, 1], new_pc[:, 2], s=1,)
+            ax.set_xlabel("x")
+            ax.set_ylabel("y")
+            ax.set_zlabel("z")
+            ax.set_xlim(-1, 1)
+            ax.set_ylim(-1, 1)
+            ax.set_zlim(0.5, 2)
+            ax.view_init(elev=-90, azim=-90)
+            plt.show()
         # GeoGrasp
         if len(new_pc) == 0:
             continue
@@ -194,7 +223,6 @@ if __name__ == '__main__':
         E_T_F = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0.133], [0, 0, 0, 1]])
         # grasping_in_base = np.dot(grasping_in_base, E_T_F)
         grasping_in_base = np.dot(grasping_in_base, np.linalg.inv(E_T_F))
-
         r = R.from_matrix(grasping_in_base[0: 3, 0: 3])
         rot = r.as_euler('xyz', degrees=False)
         transfer = grasping_in_base[0:3, 3]
@@ -209,10 +237,14 @@ if __name__ == '__main__':
         temp_pose_up = [transfer[0], transfer[1], transfer[2], rot[0], rot[1], rot[2]]
 
         print('grasp pose: ', temp_pose)
+        print('grasp pose: ', np.array(temp_pose[3:6])*180/3.14159)
+
         # # transfer to rotation vector
         # r = R.from_euler('xyz', temp_pose[3:6], degrees=False)
         # rvc = r.as_rotvec()
         # pick_pose = [temp_pose[0], temp_pose[1], temp_pose[2], rvc[0], rvc[1], rvc[2]]
         # pick_pose_up = [temp_pose_up[0], temp_pose_up[1], temp_pose_up[2], rvc[0], rvc[1], rvc[2]]
+        print(temp_pose)
+        print(temp_pose_up)
         # 抓取
         pick_place(robot, robot, home_joints, temp_pose, temp_pose_up, place_xyzrt)

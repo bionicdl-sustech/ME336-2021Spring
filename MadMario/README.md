@@ -1,6 +1,6 @@
 
 # MadMario
-PyTorch official tutorial to build an AI-powered Mario.
+PyTorch [official tutorial](https://pytorch.org/tutorials/intermediate/mario_rl_tutorial.html) to build an AI-powered Mario.
 
 ## Set Up
 1. Install [conda](https://www.anaconda.com/products/individual)
@@ -9,23 +9,14 @@ PyTorch official tutorial to build an AI-powered Mario.
     conda env create -f environment.yml
     ```
     Check the new environment *mario* is [created successfully](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file).
-    ```
-    conda env list
-    ```
 
 3. Activate *mario* enviroment
     ```
-    conda activate mario
+    conda activate myenv
     ```
-
-4. Install dependent python packages.
-    ```
-    pip install -r requirements.txt  -i https://pypi.tuna.tsinghua.edu.cn/simple
-    ```
-    **Note:** In case of "Read timed out" error, add `--default-timeout=100` in the above command. You may need to try a couple of time due to poor internet connection. In extreme cases, copy the link (e.g. [opencv-python](https://pypi.tuna.tsinghua.edu.cn/packages/0b/61/843ab00a3ed67f3f50be786bd9c78ff52c55841a13f26f8cb3cd8502eb09/opencv_python-4.2.0.34-cp38-cp38-manylinux1_x86_64.whl)) and download the installation file in your browser and install it locally by running `pip install opencv_python-4.2.0.34-cp38-cp38-manylinux1_x86_64.whl`.
 
 ## Running
-To start the **learning** process for Mario, run
+To start the **learning** process for Mario,
 ```
 python main.py
 ```
@@ -73,3 +64,14 @@ Interactive tutorial with extensive explanation and feedback. Run it on [Google 
 
 Checkpoint for a trained Mario: https://drive.google.com/file/d/1RRwhSMUrpBBRyAsfHLPGt1rlYFoiuus2/view?usp=sharing
 
+## Resources
+
+Deep Reinforcement Learning with Double Q-learning, Hado V. Hasselt et al, NIPS 2015: https://arxiv.org/abs/1509.06461
+
+OpenAI Spinning Up tutorial: https://spinningup.openai.com/en/latest/
+
+Reinforcement Learning: An Introduction, Richard S. Sutton et al. https://web.stanford.edu/class/psych209/Readings/SuttonBartoIPRLBook2ndEd.pdf
+
+super-mario-reinforcement-learning, GitHub: https://github.com/sebastianheinz/super-mario-reinforcement-learning
+
+Deep Reinforcement Learning Doesn't Work Yet: https://www.alexirpan.com/2018/02/14/rl-hard.html
